@@ -1,0 +1,14 @@
+{
+    "manifest_version": 3,
+    "name": "TSheets Reminder",
+    "version": "1.0",
+    "description": "A simple extension to count visits across websites.",
+    "permissions": ["storage", "activeTab"],
+    "action": {
+      "default_popup": "popup.html"
+    },
+    "background": {
+      "service_worker": "background.js"
+    }
+  }
+  
