@@ -20,6 +20,7 @@
 //     });
 // });
 
+// This check on what tab you're current into
 chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
     var currentTab = tabs[0];
     // Get the URL of the current tab
@@ -90,12 +91,29 @@ function AppendStatusToHtmlBody(status){
 document.addEventListener('DOMContentLoaded', function () {
     chrome.storage.local.get('tsheetData', function (data) {
         if(data){
-            const { CurrentStartTime, DayStartTime } = data.tsheetData;
-            LoadTimeData(CurrentStartTime, DayStartTime);
+            const { CurrentStartTime, DayStartTime, ClockedOut, HasDayTime} = data.tsheetData;
+            if(ClockedOut){
+                LoadClockedOutTimeData(DayStartTime, HasDayTime);
+            }else{
+                LoadTimeData(CurrentStartTime, DayStartTime);
+            }
         }
     })
 });
 
+const LoadClockedOutTimeData = (DayStartTime, HasDayTime = false) => {
+    const currentTimeElement = document.getElementById("CurrentTime");
+    if(currentTimeElement){
+        currentTimeElement.innerHTML = "Clocked out";
+    }
+
+    const dayTimeElement = document.getElementById("DayTime");
+    if(dayTimeElement){
+        if(HasDayTime)
+            dayTimeElement.innerHTML = DayStartTime;
+        else dayTimeElement.innerHTML = "-";
+    }
+}
 
 const LoadTimeData = (CurrentStartTime,DayStartTime) => {
     const currentTimeElement = document.getElementById("CurrentTime");

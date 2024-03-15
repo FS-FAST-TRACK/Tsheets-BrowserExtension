@@ -24,14 +24,29 @@ if(pageTitle.toLocaleLowerCase().includes("quickbooks")){
 
 const captureTimeClockData = () => {
     const {hour: currentHour, min: currentMin, second} = getCurrentTime()[1];
-    const CurrentStartTime = getTheActualStartTime(currentHour, currentMin, second)
+    let CurrentStartTime = undefined;
+    let DayStartTime = undefined;
+    let Week = undefined
+    let HasDayTime = true;
+    let ClockedOut = false;
+    let Break = false;
+    if(currentHour === -1 && currentMin === -1 && second === -1){
+        CurrentStartTime = getTheActualStartTime(currentHour, currentMin, second)
+        const {hour: dayHour, min: dayMin} = getDayTime(false);
+        if(dayHour === -1 && dayMin === -1) HasDayTime = false;
+        DayStartTime = `${dayHour}:${String(dayMin).padStart(2,"0")}`
+    
+        Week = getWeekTime(false);
+        ClockedOut = true;
+    }else{
+        CurrentStartTime = getTheActualStartTime(currentHour, currentMin, second)
 
-    const {hour: dayHour, min: dayMin} = getDayTime()[1];
-    const DayStartTime = getTheActualStartTime(dayHour, dayMin, second)
-
-    const Week = getWeekTime();
-
-    return {CurrentStartTime, DayStartTime, Week}
+        const {hour: dayHour, min: dayMin} = getDayTime()[1];
+        DayStartTime = getTheActualStartTime(dayHour, dayMin, second)
+    
+        Week = getWeekTime();
+    }
+    return {CurrentStartTime, DayStartTime, Week, ClockedOut, Break, HasDayTime}
 }
 
 const getTheActualStartTime = (hour, minute, second = 0) => {
@@ -64,28 +79,36 @@ const getCurrentTime = () => {
     // if(!currentTimeElement)
     //     return "0:00:00";
     const currentTimeElement = document.getElementById('timecard_task_total');
+    if(currentTimeElement.textContent.includes("-")) return ["-1:-1:-1", {hour: -1, min: -1, second: -1}]
     const hourMin = currentTimeElement.childNodes[0].childNodes[0].textContent;
-    if(hourMin.includes("-")) return ["0:0:0", {hour: 0, min: 0, second: 0}]
     const second = currentTimeElement.childNodes[0].childNodes[1].textContent.split(":")[0];
     return [`${hourMin}${second}`, {hour: hourMin.split(':')[0], min: hourMin.split(':')[1], second}];
 }
 
-const getDayTime = () => {
+const getDayTime = (def = true) => {
     // const currentTimeElement = document.getElementById('timecard_task_total');
     // if(!currentTimeElement)
     //     return "0:00:00";
     const currentTimeElement = document.getElementById('timecard_day_total');
+    if(!def){
+        if(currentTimeElement.textContent.includes("-")) return ["-1:-1", {hour: -1, min: -1}];
+        const hourMin = currentTimeElement.childNodes[1].textContent
+        return {hour: hourMin.split(':')[0], min: hourMin.split(':')[1]}
+    }
     const hourMin = currentTimeElement.childNodes[0].childNodes[0].textContent;
     if(hourMin.includes("-")) return ["0:0", {hour: 0, min: 0}]
     return [`${hourMin}`, {hour: hourMin.split(':')[0], min: hourMin.split(':')[1]}];
 }
 
-const getWeekTime = () => {
+const getWeekTime = (def = true) => {
     // const currentTimeElement = document.getElementById('timecard_task_total');
     // if(!currentTimeElement)
     //     return "0:00:00";
     const currentTimeElement = document.getElementById('timecard_week_total');
+    if(!def){
+        const hourMin = currentTimeElement.childNodes[1].textContent;
+        return [`${hourMin}`, {hour: hourMin.split(':')[0], min: hourMin.split(':')[1]}]
+    }
     const hourMin = currentTimeElement.childNodes[0].childNodes[0].textContent;
-    if(hourMin.includes("-")) return ["0:0", {hour: 0, min: 0}]
     return [`${hourMin}`, {hour: hourMin.split(':')[0], min: hourMin.split(':')[1]}];
 }
