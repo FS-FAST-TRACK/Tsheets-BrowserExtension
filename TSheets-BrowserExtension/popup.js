@@ -24,7 +24,7 @@ chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
     var currentTab = tabs[0];
     // Get the URL of the current tab
     var currentTabUrl = currentTab.url;
-    
+    if(!currentTabUrl) return;
     // Here you can check if the URL matches the one you're interested in
     if (currentTabUrl.includes("https://tsheets.intuit.com")) {
         // Code specific to the tab with URL 'https://example.com'
@@ -84,4 +84,45 @@ function AppendStatusToHtmlBody(status){
     // Get the first element within the <body> element
     var firstElement = bodyElement.querySelector("*");
     firstElement.appendChild(newStatElement)
+}
+
+// When the popup is opened
+document.addEventListener('DOMContentLoaded', function () {
+    chrome.storage.local.get('tsheetData', function (data) {
+        if(data){
+            const { CurrentStartTime, DayStartTime } = data.tsheetData;
+            LoadTimeData(CurrentStartTime, DayStartTime);
+        }
+    })
+});
+
+
+const LoadTimeData = (CurrentStartTime,DayStartTime) => {
+    const currentTimeElement = document.getElementById("CurrentTime");
+    if(currentTimeElement){
+        let date = new Date(CurrentStartTime);
+        setInterval(() => {
+            currentTimeElement.innerHTML = GetHourMinsDifference(new Date(), date);
+        }, 1000);
+    }
+
+    const dayTimeElement = document.getElementById("DayTime");
+    if(dayTimeElement){
+        let date = new Date(DayStartTime);
+        setInterval(() => {
+            dayTimeElement.innerHTML = GetHourMinsDifference(new Date(), date);
+        }, 1000);
+    }
+}
+
+const GetHourMinsDifference = (date1, date2) => {
+    // Subtract the two dates
+    const differenceInMilliseconds = Math.abs(date1 - date2);
+
+    // Convert milliseconds to seconds, minutes, hours, etc. if needed
+    const hours = Math.floor(differenceInMilliseconds / (1000 * 60 * 60));
+    const minutes = Math.floor((differenceInMilliseconds % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((differenceInMilliseconds % (1000 * 60)) / 1000);
+
+    return `${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 }

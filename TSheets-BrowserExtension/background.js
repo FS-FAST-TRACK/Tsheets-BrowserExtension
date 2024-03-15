@@ -1,18 +1,19 @@
-// Optionally, you can use background script for certain tasks
-// Listen for messages from content scripts or other parts of the extension
+// Listen for messages from content scripts
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
-    // Check if the message is to open the popup
-    if (message.action === 'openPopup' && sender.tab) {
-        // Send a message to the popup script to open the popup
-        chrome.tabs.sendMessage(sender.tab.id, { action: 'showPopup' });
+    if (message.action === 'log') {
+        // Store the information received from the content script
+        console.log(message.result)
     }
+
+    if(message.action === 'setTsheetData'){
+        console.log(message.data);
+        chrome.storage.local.set({ tsheetData: message.data });
+    }   
 });
 
-// Listen for messages from the popup script
-chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
-    // Check if the message is to request the body content
-    if (message.action === 'getBodyContent') {
-        // Send the body content back to the popup script
-        sendResponse({ bodyContent: document.body.innerHTML });
-    }
-});
+setInterval(() => {
+    console.log("running")
+}, 1000);
+
+// RUN SOMETHING IN BACKGROUND LIKE ALARM??
+// TODO: JAY WILL IMPLEMENT SOON ---- ALARM

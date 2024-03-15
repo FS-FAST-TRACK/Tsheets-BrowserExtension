@@ -8,6 +8,11 @@
         body {
             font-family: Arial, sans-serif;
             text-align: center;
+            width: 500px;
+        }
+
+        .something{
+            text-align: center; font-size: 10px;
         }
     </style>
 </head>
@@ -15,8 +20,17 @@
     <h1>TSheets Reminder</h1>
     <!-- <p>Number of visits: <span id="counter">0</span></p>
     <button id="incrementBtn">Increment Counter</button> -->
+    <div id="clock-info"></div>
+    <div class="something">
+        <p style="padding: 0;">Current Time</p>
+        <div style="font-size: 13px; color: darkgreen; padding: 0;" id="CurrentTime">-</div>
+    </div>
+    <div class="something">
+        <p style="padding: 0;">Day Time</p>
+        <div style="font-size: 13px; color: darkgreen; padding: 0;" id="DayTime">-</div>
+    </div>
     <div id="current_tab"></div>
-
+    
     <script src="popup.js"></script>
 </body>
 </html>
