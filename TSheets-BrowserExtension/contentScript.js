@@ -16,18 +16,18 @@ if(pageTitle.toLocaleLowerCase().includes("quickbooks")){
             if(data){
                 chrome.runtime.sendMessage({ action: 'setTsheetData', data:data })
             }
-        }, 2000)
+        }, 5000)
         
         
     }, 1000)
 }
 
 const captureTimeClockData = () => {
-    const {hour: currentHour, min: currentMin, currentSecond} = getCurrentTime()[1];
-    const CurrentStartTime = getTheActualStartTime(currentHour, currentMin, currentSecond)
+    const {hour: currentHour, min: currentMin, second} = getCurrentTime()[1];
+    const CurrentStartTime = getTheActualStartTime(currentHour, currentMin, second)
 
     const {hour: dayHour, min: dayMin} = getDayTime()[1];
-    const DayStartTime = getTheActualStartTime(dayHour, dayMin)
+    const DayStartTime = getTheActualStartTime(dayHour, dayMin, second)
 
     const Week = getWeekTime();
 
@@ -38,7 +38,7 @@ const getTheActualStartTime = (hour, minute, second = 0) => {
     const d = new Date();
     d.setHours(d.getHours() - hour);
     d.setMinutes(d.getMinutes() - minute);
-    d.setSeconds(d.getSeconds() - second);
+    d.setSeconds(second)
     console.log("ActualStart Time: ",d, minute)
     return formatDate(d);
 }
@@ -66,7 +66,7 @@ const getCurrentTime = () => {
     const currentTimeElement = document.getElementById('timecard_task_total');
     const hourMin = currentTimeElement.childNodes[0].childNodes[0].textContent;
     if(hourMin.includes("-")) return ["0:0:0", {hour: 0, min: 0, second: 0}]
-    const second = currentTimeElement.childNodes[0].childNodes[1].textContent;
+    const second = currentTimeElement.childNodes[0].childNodes[1].textContent.split(":")[0];
     return [`${hourMin}${second}`, {hour: hourMin.split(':')[0], min: hourMin.split(':')[1], second}];
 }
 
