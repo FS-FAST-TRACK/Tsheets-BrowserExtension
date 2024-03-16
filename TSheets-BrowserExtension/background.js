@@ -1,19 +1,23 @@
+let tSheetActions = undefined;
 // Listen for messages from content scripts
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
-    if (message.action === 'log') {
-        // Store the information received from the content script
-        console.log(message.result)
-    }
-
+    // Listen to an action called setTsheetData
     if(message.action === 'setTsheetData'){
-        console.log(message.data);
         chrome.storage.local.set({ tsheetData: message.data });
+        sendResponse(tSheetActions);
     }   
+
+    if(message.action === 'clearAction'){
+        chrome.storage.local.set({tsheetActions:{action: "idle"} } );
+    } 
 });
 
-setInterval(() => {
-    console.log("running")
-}, 1000);
-
+setInterval(()=>{
+    chrome.storage.local.get("tsheetActions", function (actions){
+        if(actions){
+            tSheetActions = actions;
+        }
+    })
+},500);
 // RUN SOMETHING IN BACKGROUND LIKE ALARM??
 // TODO: JAY WILL IMPLEMENT SOON ---- ALARM

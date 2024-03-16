@@ -14,6 +14,27 @@
         .something{
             text-align: center; font-size: 10px;
         }
+
+        button{
+            width: 200px;
+            padding: 5px 10px 5px 10px;
+            margin: 5px;
+            color: black;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        #clock-in-btn{
+            background-color: #46A657;
+        }
+
+        #take-a-break-btn{
+            background-color: #F7931E;
+        }
+
+        .hidden{
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -29,8 +50,13 @@
         <p style="padding: 0; font-size: 15px;">Day</p>
         <div style="font-size: 13px; color: darkgreen; padding: 0; font-weight: 900;" id="DayTime">-</div>
     </div>
-    <div id="current_tab"></div>
+    <div>
+        <button id="clock-in-btn">CLOCK IN</button>
+        <button id="take-a-break-btn">BREAK</button>
+        <button id="clock-out-btn">CLOCK OUT</button></div>
+    <div id="current_tab" style="padding: 10px;"></div>
     
     <script src="popup.js"></script>
+    <script src="popupActions.js"></script>
 </body>
 </html>

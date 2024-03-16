@@ -92,10 +92,13 @@ document.addEventListener('DOMContentLoaded', function () {
     chrome.storage.local.get('tsheetData', function (data) {
         if(data){
             const { CurrentStartTime, DayStartTime, ClockedOut, HasDayTime} = data.tsheetData;
+            chrome.runtime.sendMessage({ action: 'contentlog', data:"testing from popup" })
             if(ClockedOut){
                 LoadClockedOutTimeData(DayStartTime, HasDayTime);
+                hideButtons(false, true, false);
             }else{
                 LoadTimeData(CurrentStartTime, DayStartTime);
+                hideButtons(true, false, false);
             }
         }
     })
@@ -143,4 +146,23 @@ const GetHourMinsDifference = (date1, date2) => {
     const seconds = Math.floor((differenceInMilliseconds % (1000 * 60)) / 1000);
 
     return `${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+}
+
+
+const hideButtons = (clockin, clockout, takeabreak) => {
+    if(takeabreak){
+        document.getElementById("take-a-break-btn").classList.add("hidden");
+    }else{
+        document.getElementById("take-a-break-btn").classList.remove("hidden");
+    }
+    if(clockin){
+        document.getElementById("clock-in-btn").classList.add("hidden");
+    }else{
+        document.getElementById("clock-in-btn").classList.remove("hidden");
+    }
+    if(clockout){
+        document.getElementById("clock-out-btn").classList.add("hidden");
+    }else{
+        document.getElementById("clock-out-btn").classList.remove("hidden");
+    }
 }
