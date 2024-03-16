@@ -36,6 +36,41 @@ if(pageTitle.toLocaleLowerCase().includes("quickbooks")){
         
         
     }, 1000)
+}else{
+    const tSheetImbed = document.getElementById("tsheet-ext-clock");
+    if(!tSheetImbed){
+        setTimeout(()=>{
+            // create new element
+            const EmbedElement = document.createElement("tsheet-ext-clock");
+            EmbedElement.style.backgroundColor = "#46A657";
+            EmbedElement.style.fontSize = "20px";
+            EmbedElement.style.padding = "5px 10px 5px 10px";
+            EmbedElement.style.color = "white";
+            EmbedElement.style.position = "absolute";
+            EmbedElement.style.left = "50%";
+            EmbedElement.style.transform = "translateX(-50%)"
+            EmbedElement.style.borderRadius = "0px 0px 10px 10px"
+            EmbedElement.style.borderLeft = "2px solid darkgreen";
+            EmbedElement.style.borderBottom = "2px solid darkgreen";
+            EmbedElement.style.borderRight = "2px solid darkgreen";
+            EmbedElement.textContent = "Click to open TSheets";
+
+
+
+            const Header = document.createElement("div");
+            
+            Header.style.width = "100%";
+            Header.style.height = "0px"
+            Header.style.top = "0px";
+            Header.style.position = "sticky"
+            Header.style.zIndex = "1000"
+            Header.appendChild(EmbedElement);
+            
+            var body = document.body;
+            var firstChild = body.firstChild;
+            body.insertBefore(Header, firstChild);
+        }, 1000);
+    }
 }
 
 const captureTimeClockData = () => {
