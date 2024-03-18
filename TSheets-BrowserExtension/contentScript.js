@@ -195,7 +195,7 @@ const getDayTime = (def = true) => {
         if(!currentTimeElement) return {hour: -1, min: -1}
         let hourMin = "0:0";
         try{
-            currentTimeElement.childNodes[1].textContent;
+            hourMin = currentTimeElement.childNodes[1].textContent;
         }catch(e){}
         return {hour: hourMin.split(':')[0]?hourMin.split(':')[0]:"-1", min: hourMin.split(':')[1]?hourMin.split(':')[1]:"-1"}
     }
