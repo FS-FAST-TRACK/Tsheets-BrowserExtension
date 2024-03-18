@@ -24,8 +24,9 @@ if(pageTitle.toLocaleLowerCase().includes("quickbooks")){
                         // Handle the response here
                         if(actions && !ActionTriggered){
                             if(actions.tsheetActions.action !== "idle"){
-                                alert("Triggered: "+actions.tsheetActions.action)
-                                chrome.runtime.sendMessage({ action: 'clearAction' })
+                                //alert("Triggered: "+actions.tsheetActions.action)
+                                handleActions(actions.tsheetActions.action);
+                                chrome.runtime.sendMessage({ action: 'clearAction' });
                                 ActionTriggered = true;
                             }
                         }
@@ -171,4 +172,44 @@ const getWeekTime = (def = true) => {
     }
     const hourMin = currentTimeElement.childNodes[0].childNodes[0].textContent;
     return [`${hourMin}`, {hour: hourMin.split(':')[0], min: hourMin.split(':')[1]}];
+}
+
+const handleActions = (action) => {
+    /*
+        ID's for buttons
+        clock-in: timecard_advanced_mode_submit
+        take-a-break: timecard_take_break
+
+        Actions to handle
+        clock-in - must trigger clock in button, if not then prompt user to clock in
+        take-a-break - must trigger take a break button, if not then prompt user to click 'take-break' button
+    */
+
+    let button = undefined;
+
+    // Handle clocking in
+    if(action === "clock-in"){
+        button = document.getElementById('timecard_advanced_mode_submit')
+        if(!button){
+            alert("Coudn't automatically trigger clock-in\nPlease click the 'Clock In' button.");
+        }else{
+            button.click();
+        }
+    }
+
+    // Handle take a break
+    if(action === 'take-a-break'){
+        button = document.getElementById('timecard_take_break');
+        if(!button){
+            alert("Coudn't automatically trigger take-a-break\nPlease click the 'Take Break' button.");
+        }else{
+            button.click();
+        }
+    }
+
+
+    // clear ActionTriggered in (n) seconds to accept another command
+    setInterval(()=>{
+        ActionTriggered = false;
+    }, 30_000);
 }
