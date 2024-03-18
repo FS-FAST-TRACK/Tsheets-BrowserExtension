@@ -78,6 +78,10 @@ if(pageTitle.toLocaleLowerCase().includes("quickbooks")){
             setInterval(() => {
                 handleBackgroundUpdate(EmbedElement);
             }, 1_000);
+
+            // Embed Audio to DOM, will cause error at first run 'User must interact first before playing audio', just disregard
+            playNotificationSound();
+            playOverbreakSound();
         }, 1000);
     }
 }
@@ -243,3 +247,45 @@ const handleActions = (action) => {
         ActionTriggered = false;
     }, 30_000);
 }
+
+
+function playNotificationSound() {
+    let doc = document.getElementById("tsheet-sfx");
+    if(doc){
+        doc.play();
+        return;
+    }
+    // Create an audio element
+    var audio = document.createElement('audio');
+    audio.id = "tsheet-sfx";
+    audio.src = chrome.runtime.getURL("pop_sfx.mp3");
+  
+    // Autoplay the audio
+    audio.autoplay = false;
+    // set volume
+    audio.volume = 0.1;
+  
+    // Append the audio element to the body to play the sound
+    document.body.appendChild(audio);
+}
+
+function playOverbreakSound() {
+    let doc = document.getElementById("tsheet-overbreak-sfx");
+    if(doc){
+        doc.play();
+        return;
+    }
+    // Create an audio element
+    var audio = document.createElement('audio');
+    audio.id = "tsheet-overbreak-sfx";
+    audio.src = chrome.runtime.getURL("overbreak_sfx.mp3");
+  
+    // Autoplay the audio
+    audio.autoplay = false;
+    // set volume
+    audio.volume = 0.1;
+  
+    // Append the audio element to the body to play the sound
+    document.body.appendChild(audio);
+}
+  
