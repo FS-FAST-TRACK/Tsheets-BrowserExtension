@@ -43,17 +43,21 @@ if(pageTitle.toLocaleLowerCase().includes("quickbooks")){
             // create new element
             const EmbedElement = document.createElement("tsheet-ext-clock");
             EmbedElement.style.backgroundColor = "#46A657";
-            EmbedElement.style.fontSize = "20px";
-            EmbedElement.style.padding = "5px 10px 5px 10px";
+            EmbedElement.style.fontSize = "0.7rem";
+            EmbedElement.style.padding = "2px 3px 2px 3px";
             EmbedElement.style.color = "white";
             EmbedElement.style.position = "absolute";
             EmbedElement.style.left = "50%";
             EmbedElement.style.transform = "translateX(-50%)"
-            EmbedElement.style.borderRadius = "0px 0px 10px 10px"
+            EmbedElement.style.borderRadius = "0px 0px 3px 3px"
             EmbedElement.style.borderLeft = "2px solid darkgreen";
             EmbedElement.style.borderBottom = "2px solid darkgreen";
             EmbedElement.style.borderRight = "2px solid darkgreen";
             EmbedElement.textContent = "Click to open TSheets";
+            EmbedElement.style.cursor = "pointer"
+            EmbedElement.onclick = (e) => {
+                location.href = "https://tsheets.intuit.com";
+            }
 
 
 
