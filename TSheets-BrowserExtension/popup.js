@@ -93,7 +93,6 @@ document.addEventListener('DOMContentLoaded', function () {
         if(data){
             const { CurrentStartTime, DayStartTime, ClockedOut, HasDayTime, Break} = data.tsheetData;
             chrome.runtime.sendMessage({ action: 'contentlog', data:"testing from popup" })
-            console.log(Break)
             if(Break.break){
                 LoadBreakData(Break.breakTime);
                 hideButtons(true, false, true, false);

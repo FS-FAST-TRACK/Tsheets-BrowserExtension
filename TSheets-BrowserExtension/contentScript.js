@@ -146,7 +146,6 @@ const captureTimeClockData = () => {
         }
         return {CurrentStartTime, DayStartTime, Week, ClockedOut, Break, HasDayTime}
     }catch(e){
-        console.log("Error: ",e)
         return null;
     }
 }
