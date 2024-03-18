@@ -74,6 +74,10 @@ if(pageTitle.toLocaleLowerCase().includes("quickbooks")){
             var body = document.body;
             var firstChild = body.firstChild;
             body.insertBefore(Header, firstChild);
+
+            setInterval(() => {
+                handleBackgroundUpdate(EmbedElement);
+            }, 1_000);
         }, 1000);
     }
 }
@@ -173,6 +177,32 @@ const getWeekTime = (def = true) => {
     const hourMin = currentTimeElement.childNodes[0].childNodes[0].textContent;
     return [`${hourMin}`, {hour: hourMin.split(':')[0], min: hourMin.split(':')[1]}];
 }
+
+const handleBackgroundUpdate = (EmbedElement) => {
+    if(!EmbedElement) return;
+    
+    // Set element default bg color to green
+    EmbedElement.style.backgroundColor = "#46A657";
+
+    try{
+        chrome.runtime.sendMessage({ action: 'getTsheetData' }, function(data) {
+            // Handle the response here, refer to DOC.md for TSHEET DATA
+            if(data){
+                const {tsheetData} = data;
+                if(tsheetData.ClockedOut){
+                    EmbedElement.innerHTML = "You're off the clock | Click to open TSheets";
+                }else{
+                    EmbedElement.innerHTML = "You're clocked in | Click to open TSheets";
+                }
+
+                if(tsheetData.Break){
+                    EmbedElement.innerHTML = "Currently on break | Click to open TSheets";
+                    EmbedElement.style.backgroundColor = "#F7931E";
+                }
+            }
+        })
+    }catch(e){console.log("Failed to retrieve data")}
+}   
 
 const handleActions = (action) => {
     /*
