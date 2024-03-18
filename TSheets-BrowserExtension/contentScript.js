@@ -8,8 +8,7 @@ if(pageTitle.toLocaleLowerCase().includes("quickbooks")){
     setInterval(() => {
         const timeClockButton = document.getElementById('timecard_shortcut');
         
-        if(!timeClockButton)
-            return;
+        if(!timeClockButton) return;
         
         if(JSON.parse(localStorage.getItem("tsheet-extension")).FirstRun){
             timeClockButton.click();
@@ -18,6 +17,20 @@ if(pageTitle.toLocaleLowerCase().includes("quickbooks")){
         let data = captureTimeClockData();
         // Get the current time
         setTimeout(async () => {
+            /*
+                Since we're syncing time to all other tabs, we have to make sure that the time card is opened,
+                although, overtime, the timecard may be inactive and might cause delays. 
+                
+                We have to close the time-card window overtime
+            */
+            const timeCard = document.getElementById('timecard');
+            if(!timeCard) return;
+
+            if(document.hidden){
+                const closeBtn = document.getElementById('timecard_close_winc');
+                if(closeBtn) closeBtn.click();
+            }
+
             if(data){
                 try{
                     chrome.runtime.sendMessage({ action: 'setTsheetData', data:data }, function(actions) {
@@ -240,6 +253,16 @@ const handleActions = (action) => {
         take-a-break - must trigger take a break button, if not then prompt user to click 'take-break' button
         clock-out - must trigger clock out button, if not then prompt user to click clock out
     */
+
+    // check first if the timecard is closed, if yes, open it
+    const timeCard = document.getElementById('timecard');
+    if(!timeCard) {
+        const timeClockButton = document.getElementById('timecard_shortcut');
+        
+        if(!timeClockButton) return;
+        // open the timecard by clicking the timeclock
+        timeClockButton.click();
+    }
 
     let button = undefined;
 
