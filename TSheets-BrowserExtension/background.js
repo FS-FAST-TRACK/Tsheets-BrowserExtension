@@ -4,6 +4,7 @@ let tsheetData = undefined;
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
     // Listen to an action called setTsheetData
     if(message.action === 'setTsheetData'){
+        console.log(message.data)
         chrome.storage.local.set({ tsheetData: message.data });
         sendResponse(tSheetActions);
     }  

@@ -116,34 +116,39 @@ if(pageTitle.toLocaleLowerCase().includes("quickbooks")){
 }
 
 const captureTimeClockData = () => {
-    const {hour: currentHour, min: currentMin, second} = getCurrentTime()[1];
-    let CurrentStartTime = undefined;
-    let DayStartTime = undefined;
-    let Week = undefined
-    let HasDayTime = true;
-    let ClockedOut = false;
-    let Break = IsBreakTime();
-    if(currentHour === -1 && currentMin === -1 && second === -1){
-        CurrentStartTime = getTheActualStartTime(currentHour, currentMin, second)
-        const {hour: dayHour, min: dayMin} = getDayTime(false);
-        if(parseInt(dayHour) === -1 || parseInt(dayMin) === -1) {
-            HasDayTime = false;
-            DayStartTime = "-"
+    try{
+        const {hour: currentHour, min: currentMin, second} = getCurrentTime()[1];
+        let CurrentStartTime = undefined;
+        let DayStartTime = undefined;
+        let Week = undefined
+        let HasDayTime = true;
+        let ClockedOut = false;
+        let Break = IsBreakTime();
+        if(currentHour === -1 && currentMin === -1 && second === -1){
+            CurrentStartTime = getTheActualStartTime(currentHour, currentMin, second)
+            const {hour: dayHour, min: dayMin} = getDayTime(false);
+            if(parseInt(dayHour) === -1 || parseInt(dayMin) === -1) {
+                HasDayTime = false;
+                DayStartTime = "-"
+            }else{
+                DayStartTime = `${dayHour}:${String(dayMin).padStart(2,"0")}`
+            }
+        
+            Week = getWeekTime(false);
+            ClockedOut = true;
         }else{
-            DayStartTime = `${dayHour}:${String(dayMin).padStart(2,"0")}`
-        }
-    
-        Week = getWeekTime(false);
-        ClockedOut = true;
-    }else{
-        CurrentStartTime = getTheActualStartTime(currentHour, currentMin, second)
+            CurrentStartTime = getTheActualStartTime(currentHour, currentMin, second)
 
-        const {hour: dayHour, min: dayMin} = getDayTime()[1];
-        DayStartTime = getTheActualStartTime(dayHour, dayMin, second)
-    
-        Week = getWeekTime();
+            const {hour: dayHour, min: dayMin} = getDayTime()[1];
+            DayStartTime = getTheActualStartTime(dayHour, dayMin, second)
+        
+            Week = getWeekTime();
+        }
+        return {CurrentStartTime, DayStartTime, Week, ClockedOut, Break, HasDayTime}
+    }catch(e){
+        console.log("Error: ",e)
+        return null;
     }
-    return {CurrentStartTime, DayStartTime, Week, ClockedOut, Break, HasDayTime}
 }
 
 const getTheActualStartTime = (hour, minute, second = 0) => {
@@ -178,7 +183,7 @@ const getCurrentTime = () => {
     if(!currentTimeElement) return ["-1:-1:-1", {hour: -1, min: -1, second: -1}]
     if(currentTimeElement.textContent.includes("-")) return ["-1:-1:-1", {hour: -1, min: -1, second: -1}]
     const hourMin = currentTimeElement.childNodes[0].childNodes[0].textContent;
-    const second = currentTimeElement.childNodes[0].childNodes[1].textContent.split(":")[0];
+    const second = currentTimeElement.childNodes[0].childNodes[1].textContent.split(":")[0]; 
     return [`${hourMin}${second}`, {hour: hourMin.split(':')[0], min: hourMin.split(':')[1], second}];
 }
 
