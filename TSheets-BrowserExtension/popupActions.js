@@ -14,6 +14,12 @@ function sendClockOutAction(){
     switchToTab('https://tsheets.intuit.com')
 }
 
+function sendEndBreakAction(){
+    chrome.storage.local.set({tsheetActions:{action: "end-break"} } );
+    switchToTab('https://tsheets.intuit.com')
+}
+
 document.getElementById("clock-in-btn").addEventListener("click", sendClockInAction);
 document.getElementById("take-a-break-btn").addEventListener("click", sendTakeABreakAction);
 document.getElementById("clock-out-btn").addEventListener("click", sendClockOutAction);
+document.getElementById("end-break-btn").addEventListener("click", sendEndBreakAction);

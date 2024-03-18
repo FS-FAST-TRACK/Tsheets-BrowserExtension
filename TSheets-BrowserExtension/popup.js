@@ -91,14 +91,21 @@ function AppendStatusToHtmlBody(status){
 document.addEventListener('DOMContentLoaded', function () {
     chrome.storage.local.get('tsheetData', function (data) {
         if(data){
-            const { CurrentStartTime, DayStartTime, ClockedOut, HasDayTime} = data.tsheetData;
+            const { CurrentStartTime, DayStartTime, ClockedOut, HasDayTime, Break} = data.tsheetData;
             chrome.runtime.sendMessage({ action: 'contentlog', data:"testing from popup" })
+            console.log(Break)
+            if(Break.break){
+                LoadBreakData(Break.breakTime);
+                hideButtons(true, false, true, false);
+                return;
+            }
+
             if(ClockedOut){
                 LoadClockedOutTimeData(DayStartTime, HasDayTime);
-                hideButtons(false, true, false);
+                hideButtons(false, true, false, true);
             }else{
                 LoadTimeData(CurrentStartTime, DayStartTime);
-                hideButtons(true, false, false);
+                hideButtons(true, false, false, true);
             }
         }
     })
@@ -115,6 +122,21 @@ const LoadClockedOutTimeData = (DayStartTime, HasDayTime = false) => {
         if(HasDayTime)
             dayTimeElement.innerHTML = DayStartTime;
         else dayTimeElement.innerHTML = "-";
+    }
+}
+
+const LoadBreakData = (CurrentStartTime) => {
+    const currentTimeElement = document.getElementById("CurrentTime");
+    if(currentTimeElement){
+        let date = new Date(CurrentStartTime);
+        setInterval(() => {
+            currentTimeElement.innerHTML = GetHourMinsDifference(new Date(), date);
+        }, 1000);
+    }
+
+    const dayTimeElement = document.getElementById("DayTime");
+    if(dayTimeElement){
+        dayTimeElement.innerHTML = "-";
     }
 }
 
@@ -149,7 +171,7 @@ const GetHourMinsDifference = (date1, date2) => {
 }
 
 
-const hideButtons = (clockin, clockout, takeabreak) => {
+const hideButtons = (clockin, clockout, takeabreak, endbreak) => {
     if(takeabreak){
         document.getElementById("take-a-break-btn").classList.add("hidden");
     }else{
@@ -164,5 +186,10 @@ const hideButtons = (clockin, clockout, takeabreak) => {
         document.getElementById("clock-out-btn").classList.add("hidden");
     }else{
         document.getElementById("clock-out-btn").classList.remove("hidden");
+    }
+    if(endbreak){
+        document.getElementById("end-break-btn").classList.add("hidden");
+    }else{
+        document.getElementById("end-break-btn").classList.remove("hidden");
     }
 }

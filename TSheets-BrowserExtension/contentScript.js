@@ -3,6 +3,7 @@ var pageTitle = document.title;
 
 // Check if wer are in the QuickBooks website
 let ActionTriggered = false;
+let closedByDocumentHide = false;
 if(pageTitle.toLocaleLowerCase().includes("quickbooks")){
     localStorage.setItem("tsheet-extension", JSON.stringify({FirstRun: true}))
     setInterval(() => {
@@ -21,15 +22,25 @@ if(pageTitle.toLocaleLowerCase().includes("quickbooks")){
                 Since we're syncing time to all other tabs, we have to make sure that the time card is opened,
                 although, overtime, the timecard may be inactive and might cause delays. 
                 
-                We have to close the time-card window overtime
+                We have to close the time-card window overtime but we also must re-open when the tab is focused back
             */
-            const timeCard = document.getElementById('timecard');
-            if(!timeCard) return;
-
             if(document.hidden){
                 const closeBtn = document.getElementById('timecard_close_winc');
                 if(closeBtn) closeBtn.click();
+                closedByDocumentHide = true;
+            }else{ 
+                if(closedByDocumentHide){
+                    timeClockButton.click(); 
+                    closedByDocumentHide = false;
+                }
             }
+
+            const timeCard = document.getElementById('timecard');
+            if(!timeCard){
+                return;
+            }
+
+            
 
             if(data){
                 try{
@@ -38,8 +49,10 @@ if(pageTitle.toLocaleLowerCase().includes("quickbooks")){
                         if(actions && !ActionTriggered){
                             if(actions.tsheetActions.action !== "idle"){
                                 //alert("Triggered: "+actions.tsheetActions.action)
-                                handleActions(actions.tsheetActions.action);
-                                chrome.runtime.sendMessage({ action: 'clearAction' });
+                                setTimeout(()=>{
+                                    handleActions(actions.tsheetActions.action);
+                                    chrome.runtime.sendMessage({ action: 'clearAction' });
+                                }, 500);
                                 ActionTriggered = true;
                             }
                         }
@@ -58,20 +71,23 @@ if(pageTitle.toLocaleLowerCase().includes("quickbooks")){
             const EmbedElement = document.createElement("tsheet-ext-clock");
             EmbedElement.style.backgroundColor = "#46A657";
             EmbedElement.style.fontSize = "0.7rem";
-            EmbedElement.style.padding = "2px 3px 2px 3px";
+            EmbedElement.style.padding = "2px 5px 2px 5px";
             EmbedElement.style.color = "white";
             EmbedElement.style.position = "absolute";
             EmbedElement.style.left = "50%";
             EmbedElement.style.transform = "translateX(-50%)"
             EmbedElement.style.borderRadius = "0px 0px 3px 3px"
-            EmbedElement.style.borderLeft = "2px solid darkgreen";
-            EmbedElement.style.borderBottom = "2px solid darkgreen";
-            EmbedElement.style.borderRight = "2px solid darkgreen";
+            EmbedElement.style.borderLeft = "1px solid darkgreen";
+            EmbedElement.style.borderBottom = "1px solid darkgreen";
+            EmbedElement.style.borderRight = "1px solid darkgreen";
             EmbedElement.textContent = "Click to open TSheets";
             EmbedElement.style.cursor = "pointer"
+            EmbedElement.style.opacity = 0.8;
             EmbedElement.onclick = (e) => {
                 location.href = "https://tsheets.intuit.com";
             }
+            EmbedElement.onpointerover = (e) => {EmbedElement.style.opacity = 1;} 
+            EmbedElement.onpointerleave = (e) => {EmbedElement.style.opacity = 0.8;}
 
 
 
@@ -106,7 +122,7 @@ const captureTimeClockData = () => {
     let Week = undefined
     let HasDayTime = true;
     let ClockedOut = false;
-    let Break = false;
+    let Break = IsBreakTime();
     if(currentHour === -1 && currentMin === -1 && second === -1){
         CurrentStartTime = getTheActualStartTime(currentHour, currentMin, second)
         const {hour: dayHour, min: dayMin} = getDayTime(false);
@@ -216,26 +232,41 @@ const GetHourMinsDifference = (date1, date2) => {
 const handleBackgroundUpdate = (EmbedElement) => {
     if(!EmbedElement) return;
     
-    // Set element default bg color to green
-    EmbedElement.style.backgroundColor = "#46A657";
 
     try{
         chrome.runtime.sendMessage({ action: 'getTsheetData' }, function(data) {
             // Handle the response here, refer to DOC.md for TSHEET DATA
             if(data){
                 const {tsheetData} = data;
+                if(tsheetData.Break.break){
+                    let date = new Date(tsheetData.Break.breakTime);
+                    let diff = GetHourMinsDifference(new Date(), date)
+                    EmbedElement.innerHTML = `Break-Time | ${diff}`;
+
+                    let minute = diff.split(":")[1];
+                    if(parseInt(minute) >= 40){
+                        EmbedElement.style.backgroundColor = "#DF1F26";
+                        if(diff.includes("40:00")){
+                            playOverbreakSound()
+                        }
+                    }else{
+                        EmbedElement.style.backgroundColor = "#F7931E";
+                    }
+                    return;
+                }
+
+                
+                // Set element default bg color to green
+                EmbedElement.style.backgroundColor = "#46A657";
+
                 if(tsheetData.ClockedOut){
-                    EmbedElement.innerHTML = "You're off the clock | Click to open TSheets";
+                    EmbedElement.innerHTML = "You're off the clock";
                 }else{
                     let date = new Date(tsheetData.CurrentStartTime);
                     let diff = GetHourMinsDifference(new Date(), date)
-                    EmbedElement.innerHTML = `You're clocked in | ${diff} | Click to open TSheets`;
+                    EmbedElement.innerHTML = `Clocked-In | ${diff}`;
                 }
-
-                if(tsheetData.Break){
-                    EmbedElement.innerHTML = "Currently on break | Click to open TSheets";
-                    EmbedElement.style.backgroundColor = "#F7931E";
-                }
+                
             }
         })
     }catch(e){console.log("Failed to retrieve data")}
@@ -247,11 +278,13 @@ const handleActions = (action) => {
         clock-in: timecard_advanced_mode_submit
         take-a-break: timecard_take_break
         clock-out: timecard_submit
+        end-break: manual_break_end_break_button
 
         Actions to handle
         clock-in - must trigger clock in button, if not then prompt user to clock in
         take-a-break - must trigger take a break button, if not then prompt user to click 'take-break' button
         clock-out - must trigger clock out button, if not then prompt user to click clock out
+        end-break - must trigger end break button, if not, ask the user
     */
 
     // check first if the timecard is closed, if yes, open it
@@ -264,43 +297,55 @@ const handleActions = (action) => {
         timeClockButton.click();
     }
 
-    let button = undefined;
+    setTimeout(()=> {
+        let button = undefined;
 
-    // Handle clocking in
-    if(action === "clock-in"){
-        button = document.getElementById('timecard_advanced_mode_submit')
-        if(!button){
-            alert("Coudn't automatically trigger clock-in\nPlease click the 'Clock In' button.");
-        }else{
-            button.click();
+        // Handle clocking in
+        if(action === "clock-in"){
+            button = document.getElementById('timecard_advanced_mode_submit')
+            if(!button){
+                alert("Coudn't automatically trigger clock-in\nPlease click the 'Clock In' button.");
+            }else{
+                button.click();
+            }
         }
-    }
 
-    // Handle take a break
-    if(action === 'take-a-break'){
-        button = document.getElementById('timecard_take_break');
-        if(!button){
-            alert("Coudn't automatically trigger take-a-break\nPlease click the 'Take Break' button.");
-        }else{
-            button.click();
+        // Handle take a break
+        if(action === 'take-a-break'){
+            button = document.getElementById('timecard_take_break');
+            if(!button){
+                alert("Coudn't automatically trigger take-a-break\nPlease click the 'Take Break' button.");
+            }else{
+                button.click();
+            }
         }
-    }
 
-    // Handle clock out
-    if(action === 'clock-out'){
-        button = document.getElementById('timecard_submit');
-        if(!button){
-            alert("Coudn't automatically trigger clock-out\nPlease click the 'Clock Out' button.");
-        }else{
-            button.click();
+        // Handle end break
+        if(action === 'end-break'){
+            button = document.getElementById('manual_break_end_break_button');
+            if(!button){
+                alert("Coudn't automatically trigger end-break\nPlease click the 'End Break' button.");
+            }else{
+                button.click();
+            }
         }
-    }
+
+        // Handle clock out
+        if(action === 'clock-out'){
+            button = document.getElementById('timecard_submit');
+            if(!button){
+                alert("Coudn't automatically trigger clock-out\nPlease click the 'Clock Out' button.");
+            }else{
+                button.click();
+            }
+        }
 
 
-    // clear ActionTriggered in (n) seconds to accept another command
-    setInterval(()=>{
-        ActionTriggered = false;
-    }, 30_000);
+        // clear ActionTriggered in (n) seconds to accept another command
+        setInterval(()=>{
+            ActionTriggered = false;
+        }, 30_000);
+    }, 1000);
 }
 
 
@@ -342,5 +387,17 @@ function playOverbreakSound() {
   
     // Append the audio element to the body to play the sound
     document.body.appendChild(audio);
+}
+
+const IsBreakTime = () => {
+    const breakContainer = document.getElementById('manual_break_break_container');
+
+    if(!breakContainer) return { break: false, breakTime: "00:00"}
+
+    const total = document.getElementById("manual_break_break_total");
+    const minTime = total.childNodes[0].textContent;
+    const secTime = total.childNodes[1].textContent.split(":")[1];
+
+    return { break: true, breakTime: getTheActualStartTime(0,minTime)}
 }
   
