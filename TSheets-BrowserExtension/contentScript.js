@@ -160,7 +160,10 @@ const getDayTime = (def = true) => {
     const currentTimeElement = document.getElementById('timecard_day_total');
     if(!def){
         if(!currentTimeElement) return {hour: -1, min: -1}
-        const hourMin = currentTimeElement.childNodes[1].textContent
+        let hourMin = "0:0";
+        try{
+            currentTimeElement.childNodes[1].textContent;
+        }catch(e){}
         return {hour: hourMin.split(':')[0]?hourMin.split(':')[0]:"-1", min: hourMin.split(':')[1]?hourMin.split(':')[1]:"-1"}
     }
     const hourMin = currentTimeElement.childNodes[0].childNodes[0].textContent;
@@ -175,11 +178,26 @@ const getWeekTime = (def = true) => {
     const currentTimeElement = document.getElementById('timecard_week_total');
     if(!currentTimeElement) return [`-1:-1`, {hour: -1, min: -1}]
     if(!def){
-        const hourMin = currentTimeElement.childNodes[1].textContent;
+        let hourMin = "0:0";
+        try{
+            currentTimeElement.childNodes[1].textContent;
+        }catch(e){}
         return [`${hourMin}`, {hour: hourMin.split(':')[0], min: hourMin.split(':')[1]}]
     }
     const hourMin = currentTimeElement.childNodes[0].childNodes[0].textContent;
     return [`${hourMin}`, {hour: hourMin.split(':')[0], min: hourMin.split(':')[1]}];
+}
+
+const GetHourMinsDifference = (date1, date2) => {
+    // Subtract the two dates
+    const differenceInMilliseconds = Math.abs(date1 - date2);
+
+    // Convert milliseconds to seconds, minutes, hours, etc. if needed
+    const hours = Math.floor(differenceInMilliseconds / (1000 * 60 * 60));
+    const minutes = Math.floor((differenceInMilliseconds % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((differenceInMilliseconds % (1000 * 60)) / 1000);
+
+    return `${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 }
 
 const handleBackgroundUpdate = (EmbedElement) => {
@@ -196,7 +214,9 @@ const handleBackgroundUpdate = (EmbedElement) => {
                 if(tsheetData.ClockedOut){
                     EmbedElement.innerHTML = "You're off the clock | Click to open TSheets";
                 }else{
-                    EmbedElement.innerHTML = "You're clocked in | Click to open TSheets";
+                    let date = new Date(tsheetData.CurrentStartTime);
+                    let diff = GetHourMinsDifference(new Date(), date)
+                    EmbedElement.innerHTML = `You're clocked in | ${diff} | Click to open TSheets`;
                 }
 
                 if(tsheetData.Break){
