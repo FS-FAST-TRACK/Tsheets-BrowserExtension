@@ -233,10 +233,12 @@ const handleActions = (action) => {
         ID's for buttons
         clock-in: timecard_advanced_mode_submit
         take-a-break: timecard_take_break
+        clock-out: timecard_submit
 
         Actions to handle
         clock-in - must trigger clock in button, if not then prompt user to clock in
         take-a-break - must trigger take a break button, if not then prompt user to click 'take-break' button
+        clock-out - must trigger clock out button, if not then prompt user to click clock out
     */
 
     let button = undefined;
@@ -256,6 +258,16 @@ const handleActions = (action) => {
         button = document.getElementById('timecard_take_break');
         if(!button){
             alert("Coudn't automatically trigger take-a-break\nPlease click the 'Take Break' button.");
+        }else{
+            button.click();
+        }
+    }
+
+    // Handle clock out
+    if(action === 'clock-out'){
+        button = document.getElementById('timecard_submit');
+        if(!button){
+            alert("Coudn't automatically trigger clock-out\nPlease click the 'Clock Out' button.");
         }else{
             button.click();
         }
