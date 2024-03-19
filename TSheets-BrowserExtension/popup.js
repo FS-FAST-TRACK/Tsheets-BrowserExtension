@@ -90,7 +90,7 @@ function AppendStatusToHtmlBody(status){
 // When the popup is opened
 document.addEventListener('DOMContentLoaded', function () {
     chrome.storage.local.get('tsheetData', function (data) {
-        if(data){
+        if(data && data.tsheetData){
             const { CurrentStartTime, DayStartTime, ClockedOut, HasDayTime, Break} = data.tsheetData;
             chrome.runtime.sendMessage({ action: 'contentlog', data:"testing from popup" })
             if(Break.break){
@@ -106,6 +106,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 LoadTimeData(CurrentStartTime, DayStartTime);
                 hideButtons(true, false, false, true);
             }
+        }else{
+            hideButtons(true, true, true, true);
         }
     })
 });
