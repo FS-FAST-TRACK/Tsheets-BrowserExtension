@@ -250,7 +250,7 @@ const handleBackgroundUpdate = (EmbedElement) => {
                     let minute = diff.split(":")[1];
                     if(parseInt(minute) >= 40){
                         EmbedElement.style.backgroundColor = "#DF1F26";
-                        if(diff.includes("40:00")){
+                        if(diff.includes("40:00") || diff.includes("50:00") || diff.includes("55:00") || diff.includes("58:00") || diff.includes("58:30")){
                             playOverbreakSound()
                         }
                     }else{
@@ -268,7 +268,23 @@ const handleBackgroundUpdate = (EmbedElement) => {
                 }else{
                     let date = new Date(tsheetData.CurrentStartTime);
                     let diff = GetHourMinsDifference(new Date(), date)
-                    EmbedElement.innerHTML = `Clocked-In | ${diff}`;
+                    const textContent = `Clocked-In | ${diff}`;
+                    if(tsheetData.HasDayTime){
+                        let dayStartTime = new Date(tsheetData.DayStartTime);
+                        let dayStartTimeDiff = GetHourMinsDifference(new Date(), dayStartTime);
+                        // Ensure that the current day and day start time must not be identical
+                        if(!diff.includes(dayStartTimeDiff)){
+                            textContent = textContent + ` | ${dayStartTimeDiff}`;
+
+                            try{
+                                let hour = diff.split(":")[0];
+                                if(parseInt(hour) >= 5){
+                                    EmbedElement.style.color = "#DF1F26";
+                                }else { EmbedElement.style.color = "white"; }
+                            }catch(e){}
+                        }
+                    }
+                    EmbedElement.innerHTML = textContent;
                 }
                 
             }
