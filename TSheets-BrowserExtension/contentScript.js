@@ -83,6 +83,7 @@ if(pageTitle.toLocaleLowerCase().includes("quickbooks")){
             EmbedElement.textContent = "Click to open TSheets";
             EmbedElement.style.cursor = "pointer"
             EmbedElement.style.opacity = 0.7;
+            EmbedElement.style.zIndex = "9999999"
             EmbedElement.onclick = (e) => {
                 // location.href = "https://tsheets.intuit.com";
             }
@@ -265,6 +266,7 @@ const handleBackgroundUpdate = (EmbedElement) => {
 
                 if(tsheetData.ClockedOut){
                     EmbedElement.innerHTML = "You're off the clock";
+                    EmbedElement.style.color = "white";
                 }else{
                     let date = new Date(tsheetData.CurrentStartTime);
                     let diff = GetHourMinsDifference(new Date(), date)
