@@ -278,7 +278,10 @@ const handleBackgroundUpdate = (EmbedElement) => {
 
                             try{
                                 let hour = diff.split(":")[0];
-                                if(parseInt(hour) >= 5){
+                                let dayHour = dayStartTimeDiff.split(":")[0]
+                                // * If current hour is greater than or equal to 5 or current day hour is greater than or equal to 8
+                                // * we set warning font-color
+                                if(parseInt(hour) >= 5 || parseInt(dayHour) >= 8){
                                     EmbedElement.style.color = "#DF1F26";
                                 }else { EmbedElement.style.color = "white"; }
                             }catch(e){}
