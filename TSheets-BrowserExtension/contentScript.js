@@ -268,13 +268,13 @@ const handleBackgroundUpdate = (EmbedElement) => {
                 }else{
                     let date = new Date(tsheetData.CurrentStartTime);
                     let diff = GetHourMinsDifference(new Date(), date)
-                    const textContent = `Clocked-In | ${diff}`;
+                    let textContent = `Clocked-In | ${diff}`;
                     if(tsheetData.HasDayTime){
                         let dayStartTime = new Date(tsheetData.DayStartTime);
                         let dayStartTimeDiff = GetHourMinsDifference(new Date(), dayStartTime);
                         // Ensure that the current day and day start time must not be identical
                         if(!diff.includes(dayStartTimeDiff)){
-                            textContent = textContent + ` | ${dayStartTimeDiff}`;
+                            textContent = textContent + ` | Day: ${dayStartTimeDiff}`;
 
                             try{
                                 let hour = diff.split(":")[0];
