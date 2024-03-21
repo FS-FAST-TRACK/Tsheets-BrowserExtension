@@ -84,6 +84,7 @@ if(pageTitle.toLocaleLowerCase().includes("quickbooks")){
             EmbedElement.style.cursor = "pointer"
             EmbedElement.style.opacity = 0.7;
             EmbedElement.style.zIndex = "9999999"
+            EmbedElement.style.fontWeight = "900";
             EmbedElement.onclick = (e) => {
                 // location.href = "https://tsheets.intuit.com";
             }
@@ -98,7 +99,7 @@ if(pageTitle.toLocaleLowerCase().includes("quickbooks")){
             Header.style.height = "0px"
             Header.style.top = "0px";
             Header.style.position = "sticky"
-            Header.style.zIndex = "1000"
+            Header.style.zIndex = "9999999"
             Header.appendChild(EmbedElement);
             
             var body = document.body;
