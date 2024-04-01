@@ -82,14 +82,14 @@ if(pageTitle.toLocaleLowerCase().includes("quickbooks")){
             EmbedElement.style.borderRight = "1px solid darkgreen";
             EmbedElement.textContent = "Click to open TSheets";
             EmbedElement.style.cursor = "pointer"
-            EmbedElement.style.opacity = 0.7;
+            EmbedElement.style.opacity = 0.4;
             EmbedElement.style.zIndex = "9999999"
             EmbedElement.style.fontWeight = "900";
             EmbedElement.onclick = (e) => {
                 // location.href = "https://tsheets.intuit.com";
             }
             EmbedElement.onpointerover = (e) => {EmbedElement.style.opacity = 1;} 
-            EmbedElement.onpointerleave = (e) => {EmbedElement.style.opacity = 0.7;}
+            EmbedElement.onpointerleave = (e) => {EmbedElement.style.opacity = 0.4;}
 
 
 
