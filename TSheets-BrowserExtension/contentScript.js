@@ -91,7 +91,14 @@ if(pageTitle.toLocaleLowerCase().includes("quickbooks")){
             EmbedElement.onpointerover = (e) => {EmbedElement.style.opacity = 1;} 
             EmbedElement.onpointerleave = (e) => {EmbedElement.style.opacity = 0.4;}
 
-
+            const HeaderHolder = document.createElement("div")
+            HeaderHolder.style.width = "100%";
+            HeaderHolder.style.height = "100%"
+            HeaderHolder.style.top = "0px";
+            HeaderHolder.style.left = "50%";
+            HeaderHolder.style.transform = "translateX(-50%)"
+            HeaderHolder.style.position = "absolute"
+            HeaderHolder.style.zIndex = "9999999"
 
             const Header = document.createElement("div");
             
@@ -101,10 +108,11 @@ if(pageTitle.toLocaleLowerCase().includes("quickbooks")){
             Header.style.position = "sticky"
             Header.style.zIndex = "9999999"
             Header.appendChild(EmbedElement);
+            HeaderHolder.appendChild(Header);
             
             var body = document.body;
             var firstChild = body.firstChild;
-            body.insertBefore(Header, firstChild);
+            body.insertBefore(HeaderHolder, firstChild);
 
             setInterval(() => {
                 handleBackgroundUpdate(EmbedElement);
