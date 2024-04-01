@@ -69,6 +69,9 @@ if(pageTitle.toLocaleLowerCase().includes("quickbooks")){
         setTimeout(()=>{
             // create new element
             const EmbedElement = document.createElement("tsheet-ext-clock");
+            EmbedElement.style.width = "200px";
+            EmbedElement.style.maxWidth = "300px";
+            EmbedElement.style.textAlign = "center";
             EmbedElement.style.backgroundColor = "#46A657";
             EmbedElement.style.fontSize = "0.7rem";
             EmbedElement.style.padding = "2px 5px 2px 5px";
@@ -92,21 +95,23 @@ if(pageTitle.toLocaleLowerCase().includes("quickbooks")){
             EmbedElement.onpointerleave = (e) => {EmbedElement.style.opacity = 0.4;}
 
             const HeaderHolder = document.createElement("div")
-            HeaderHolder.style.width = "100%";
+            HeaderHolder.style.width = "1px";
             HeaderHolder.style.height = "100%"
             HeaderHolder.style.top = "0px";
             HeaderHolder.style.left = "50%";
             HeaderHolder.style.transform = "translateX(-50%)"
             HeaderHolder.style.position = "absolute"
-            HeaderHolder.style.zIndex = "9999999"
+            HeaderHolder.style.zIndex = "99999"
 
             const Header = document.createElement("div");
             
-            Header.style.width = "100%";
-            Header.style.height = "0px"
+            Header.style.width = "300px";
+            Header.style.height = "30px"
             Header.style.top = "0px";
             Header.style.position = "sticky"
             Header.style.zIndex = "9999999"
+            Header.style.left = "50%";
+            Header.style.transform = "translateX(-50%)"
             Header.appendChild(EmbedElement);
             HeaderHolder.appendChild(Header);
             
