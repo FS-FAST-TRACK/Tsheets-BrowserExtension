@@ -299,6 +299,11 @@ const handleBackgroundUpdate = (EmbedElement) => {
                                 // * we set warning font-color
                                 if(parseInt(hour) >= 5 || parseInt(dayHour) >= 8){
                                     EmbedElement.style.color = "#DF1F26";
+
+                                    // Play single sound on hour 5 or dayhour 8
+                                    if(hour.includes("5:00") || dayHour.includes("8:00")){
+                                        playOverbreakSound()
+                                    }
                                 }else { EmbedElement.style.color = "white"; }
                             }catch(e){}
                         }
